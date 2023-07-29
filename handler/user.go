@@ -27,7 +27,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 		errors := helper.FormatError(err)
 		errorMassage := gin.H{"errors": errors}
 		response := helper.APIResponse("Register Account failed", http.StatusUnprocessableEntity, "error", errorMassage)
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
 
