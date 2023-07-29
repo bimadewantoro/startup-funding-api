@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/driver/mysql"
@@ -8,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"startup-funding/auth"
+	"startup-funding/campaign"
 	"startup-funding/handler"
 	"startup-funding/helper"
 	"startup-funding/user"
@@ -23,6 +25,20 @@ func main() {
 	}
 
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+
+	campaigns, err := campaignRepository.FindByUserID(2)
+
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println("debug")
+	fmt.Println(len(campaigns))
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		fmt.Println(campaign.CampaignImages[0].FileName)
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 
