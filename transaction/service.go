@@ -2,7 +2,9 @@ package transaction
 
 import (
 	"errors"
+	"math/rand"
 	"startup-funding/campaign"
+	"time"
 )
 
 type service struct {
@@ -13,6 +15,7 @@ type service struct {
 type Service interface {
 	GetTransactionByCampaignID(input GetCampaignTransactionsInput) ([]Transaction, error)
 	GetTransactionByUserID(userID int) ([]Transaction, error)
+	CreateTransaction(input CreateTransactionInput) (Transaction, error)
 }
 
 func NewService(repository Repository, campaignRepository campaign.Repository) *service {
@@ -45,4 +48,34 @@ func (s *service) GetTransactionByUserID(userID int) ([]Transaction, error) {
 	}
 
 	return transactions, nil
+}
+
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func generateCode() string {
+	rand.Seed(time.Now().UnixNano())
+
+	codeLength := 12
+	b := make([]byte, codeLength)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return "praka-" + string(b)
+}
+
+func (s *service) CreateTransaction(input CreateTransactionInput) (Transaction, error) {
+	transaction := Transaction{}
+	transaction.CampaignID = input.CampaignID
+	transaction.Amount = input.Amount
+	transaction.UserID = input.User.ID
+	transaction.Status = "pending"
+	transaction.Code = generateCode()
+
+	newTransaction, err := s.repository.Save(transaction)
+
+	if err != nil {
+		return newTransaction, err
+	}
+
+	return newTransaction, nil
 }
