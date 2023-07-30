@@ -11,6 +11,7 @@ import (
 	"startup-funding/campaign"
 	"startup-funding/handler"
 	"startup-funding/helper"
+	"startup-funding/payment"
 	"startup-funding/transaction"
 	"startup-funding/user"
 	"strings"
@@ -31,7 +32,8 @@ func main() {
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 	campaignService := campaign.NewService(campaignRepository)
-	transactionService := transaction.NewService(transactionRepository, campaignRepository)
+	paymentService := payment.NewService()
+	transactionService := transaction.NewService(transactionRepository, campaignRepository, paymentService)
 
 	userHandler := handler.NewUserHandler(userService, authService)
 	campaignHandler := handler.NewCampaignHandler(campaignService)
