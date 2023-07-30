@@ -1,8 +1,11 @@
 package payment
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/snap"
+	"log"
+	"os"
 	"startup-funding/user"
 	"strconv"
 )
@@ -14,6 +17,12 @@ type Service interface {
 	GetPaymentURL(transaction Transaction, user user.User) (string, error)
 }
 
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
 func NewService() *service {
 	return &service{}
 }
@@ -21,8 +30,19 @@ func NewService() *service {
 func (s *service) GetPaymentURL(transaction Transaction, user user.User) (string, error) {
 	var client snap.Client
 
-	midtrans.ServerKey = "SB-Mid-server-x85FfyzK9-oRIGsjTlLV2QGg"
-	midtrans.Environment = midtrans.Sandbox
+	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
+	environment := os.Getenv("MIDTRANS_ENVIRONMENT")
+
+	midtrans.ServerKey = serverKey
+
+	switch environment {
+	case "sandbox":
+		midtrans.Environment = midtrans.Sandbox
+	case "production":
+		midtrans.Environment = midtrans.Production
+	default:
+		log.Fatal("Invalid MIDTRANS_ENVIRONMENT value in .env")
+	}
 
 	client.New(midtrans.ServerKey, midtrans.Environment)
 

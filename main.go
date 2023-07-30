@@ -4,10 +4,12 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"os"
 	"startup-funding/auth"
 	"startup-funding/campaign"
 	"startup-funding/handler"
@@ -19,7 +21,19 @@ import (
 )
 
 func main() {
-	dsn := "root:1234@tcp(127.0.0.1:3306)/startup_funding?charset=utf8mb4&parseTime=True&loc=Local"
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+
+	dbUsername := os.Getenv("DB_USERNAME")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbDatabase := os.Getenv("DB_DATABASE")
+
+	dsn := dbUsername + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbDatabase +
+		"?charset=utf8mb4&parseTime=True&loc=Local"
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
