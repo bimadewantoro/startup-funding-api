@@ -56,6 +56,7 @@ func main() {
 
 	// Transactions Endpoint
 	api.GET("/campaigns/:id/transactions", authMiddleware(authService, userService), transactionHandler.GetCampaignTransacations)
+	api.GET("/transactions", authMiddleware(authService, userService), transactionHandler.GetUserTransaction)
 
 	router.Run()
 }
