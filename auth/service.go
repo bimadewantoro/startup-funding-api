@@ -3,6 +3,9 @@ package auth
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
+	"log"
+	"os"
 )
 
 type Service interface {
@@ -13,7 +16,17 @@ type Service interface {
 type jwtService struct {
 }
 
-var SECRET_KEY = []byte("ini-secret-key")
+var SECRET_KEY []byte
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	secretKey := os.Getenv("SECRET_KEY")
+
+	SECRET_KEY = []byte(secretKey)
+}
 
 func NewService() *jwtService {
 	return &jwtService{}
