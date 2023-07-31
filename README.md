@@ -24,7 +24,7 @@ The "Startup Funding API" project, which is built using the Go programming langu
 1. Clone the repository from GitHub: `git clone `
 2. Navigate to the project directory: `cd startup-funding-api`
 3. Install the required dependencies: `go get ./...`
-4. 4. Set up your .env credentials: `Please contact me if you need the sample`
+4. Set up your .env credentials: `Please contact me if you need the sample`
 5. Build the project: `go build`
 6. Run the application: `./startup-funding-api`
 
