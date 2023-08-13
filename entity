@@ -4,7 +4,7 @@ Entity
 * id : int
 * name : varchar
 * occupation : varchar
-* pasword_hash : varchar
+* password_hash : varchar
 * avatar_file_name : varchar
 * role : varchar
 * token : varchar 
