@@ -1,38 +1,32 @@
-FROM ubuntu:latest
-LABEL authors="Bima Dewantoro"
-
-ENTRYPOINT ["top", "-b"]
-
 # Use the official Golang image as the base image
-FROM golang AS build
+FROM golang:1.18-alpine as builder
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum to download and cache dependencies
+# Copy go.mod and go.sum files to the container
 COPY go.mod go.sum ./
+
+# Download and cache Go dependencies
 RUN go mod download
 
-# Copy the rest of the application source code
+# Copy the rest of the application code to the container
 COPY . .
 
-# Copy the .env file
-COPY .env .env
+# Build the Go application
+RUN go build -o main
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-
-# Use a minimal base image for the final container
+# Use a minimal Alpine-based image for the final runtime image
 FROM alpine:latest
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the binary from the build image to the final container
-COPY --from=build /app/main .
+# Copy the binary from the builder stage
+COPY --from=builder /app/main .
 
-# Expose the port that your application listens on
-EXPOSE 8080
+# Copy the .env file from the host to the container
+COPY .env .
 
-# Start your application with environment variables from .env file
-CMD ["sh", "-c", "source .env && ./main"]
+# Run the application
+CMD ["./main"]
