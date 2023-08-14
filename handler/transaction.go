@@ -4,16 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"startup-funding/helper"
+	"startup-funding/payment"
 	"startup-funding/transaction"
 	"startup-funding/user"
 )
 
 type transactionHandler struct {
-	service transaction.Service
+	service        transaction.Service
+	paymentService payment.Service
 }
 
-func NewTransactionHandler(service transaction.Service) *transactionHandler {
-	return &transactionHandler{service}
+func NewTransactionHandler(service transaction.Service, paymentService payment.Service) *transactionHandler {
+	return &transactionHandler{service, paymentService}
 }
 
 func (h *transactionHandler) GetCampaignTransacations(c *gin.Context) {
@@ -96,7 +98,7 @@ func (h *transactionHandler) GetNotification(c *gin.Context) {
 		return
 	}
 
-	err = h.service.ProcessPayment(input)
+	err = h.paymentService.ProcessPayment(input)
 	if err != nil {
 		response := helper.APIResponse("Failed to process notification", http.StatusBadRequest, "error", nil)
 		c.JSON(http.StatusBadRequest, response)
